@@ -29,6 +29,8 @@ namespace Silo
                     .WithReferences()
                     .WithCodeGeneration())
                 .ConfigureLogging(logging => logging.AddConsole())
+                .AddSimpleMessageStreamProvider("SMSProvider")
+                .AddMemoryGrainStorage("PubSubStore")
                 .AddStartupTask(InitStartingRoom);
 
             var host = builder.Build();
