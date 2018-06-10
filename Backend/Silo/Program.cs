@@ -4,6 +4,9 @@ using Orleans.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans.Configuration;
 using System.Threading.Tasks;
+using System.Threading;
+using GameAreas;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Silo
 {
@@ -22,7 +25,11 @@ namespace Silo
                     options.ClusterId = "dev";
                     options.ServiceId = "MyAwesomeService";
                 })
-                .ConfigureLogging(logging => logging.AddConsole());
+                .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(GameAreaGrain).Assembly)
+                    .WithReferences()
+                    .WithCodeGeneration())
+                .ConfigureLogging(logging => logging.AddConsole())
+                .AddStartupTask(InitStartingRoom);
 
             var host = builder.Build();
             await host.StartAsync();
@@ -31,6 +38,15 @@ namespace Silo
             Console.ReadLine();
 
             await host.StopAsync();
+        }
+
+        private static async Task InitStartingRoom(IServiceProvider services, CancellationToken cancellation)
+        {
+            var grainFactory = services.GetRequiredService<IGrainFactory>();
+
+            // Get a reference to a grain and call a method on it.
+            var grain = grainFactory.GetGrain<IGameAreaGrain>(Guid.Empty);
+            await grain.Initialize();
         }
     }
 }
