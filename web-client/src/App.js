@@ -17,13 +17,10 @@ class App extends Component {
     }
   }
 
-  onMessage = (message) => {
-    console.log('got message', message);
+  onMessage = (messageBody) => {
+    console.log(`got message${messageBody}`);
+    const event = JSON.parse(messageBody);
     this.setState(({eventStream}) => {
-      const event = {
-        id: Date.now(),
-        message
-      };
       const newStream = [...eventStream, event].slice(-10);
       return {
         eventStream: newStream
@@ -39,6 +36,7 @@ class App extends Component {
           {this.state.eventStream.map(e => <TimelineEvent event={e}/>)}
         </ul>
         <Websocket url='ws://localhost:5000/event-stream'
+            debug={true}
             onMessage={this.onMessage}/>
       </div>
     );
