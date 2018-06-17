@@ -11,7 +11,7 @@ namespace Silo.GameAreas
     public class GameAreaGrain : Grain, IGameAreaGrain
     {
         private readonly ILogger<GameAreaGrain> logger;
-        private IAsyncStream<GameAreaMessageEvent> areaStreamProvider;
+        private IAsyncStream<IGameAreaEvent> areaEventStream;
 
         public GameAreaGrain(ILogger<GameAreaGrain> logger)
         {
@@ -19,10 +19,11 @@ namespace Silo.GameAreas
         }
         public override async Task OnActivateAsync()
         {
-            System.Console.WriteLine("Activating");
+            logger.LogInformation("Activating");
             await base.OnActivateAsync();
             base.RegisterTimer(TickTock, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2));
-            areaStreamProvider = GetStreamProvider("SMSProvider").GetStream<GameAreaMessageEvent>(GrainReference.GetPrimaryKey(), null);
+            areaEventStream = GetStreamProvider("SMSProvider")
+                .GetStream<IGameAreaEvent>(GrainReference.GetPrimaryKey(), null);
         }
 
         private async Task TickTock(object arg)
@@ -31,12 +32,12 @@ namespace Silo.GameAreas
                 PlayerTimelineMessage = $"The clock ticks. The time is now _{DateTime.Now}_"
             };
             logger.LogInformation("Sending event: {e}", e);
-            await areaStreamProvider.OnNextAsync(e);
+            await areaEventStream.OnNextAsync(e);
         }
 
         public Task Initialize()
         {
-            System.Console.WriteLine("Initializing");
+            logger.LogInformation("Initializing");
             return Task.CompletedTask;
         }
     }

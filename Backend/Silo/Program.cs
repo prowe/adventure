@@ -30,7 +30,9 @@ namespace Silo
                     .WithReferences()
                     .WithCodeGeneration())
                 .ConfigureLogging(logging => logging.AddConsole())
-                .AddSimpleMessageStreamProvider("SMSProvider")
+                .AddSimpleMessageStreamProvider("SMSProvider", (SimpleMessageStreamProviderOptions options) => {
+                    options.FireAndForgetDelivery = true;
+                })
                 .AddMemoryGrainStorage("PubSubStore")
                 .AddStartupTask(InitStartingRoom);
 

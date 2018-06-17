@@ -2,7 +2,7 @@ using Grains;
 
 namespace Grains.GameAreas
 {
-    public class GameAreaMessageEvent : IGameEvent
+    public class GameAreaMessageEvent : IGameAreaEvent
     {
         public string PlayerTimelineMessage {get; set;}
 
