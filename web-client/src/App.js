@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 
 function TimelineEvent({event}) {
   return (
-    <li key={event.id}><ReactMarkdown source={event.playerTimelineMessage}/></li>
+    <li key={event.id}><ReactMarkdown source={event.timelineMessage}/></li>
   );
 }
 
@@ -20,7 +20,7 @@ class App extends Component {
   onMessage = (messageBody) => {
     console.log(`got message${messageBody}`);
     const event = JSON.parse(messageBody);
-    if (event.playerTimelineMessage) {
+    if (event.timelineMessage) {
       this.pushTimelineEvent(event);
     }
   }

@@ -13,13 +13,12 @@ using Orleans.Streams;
 
 namespace GameService
 {
-    public class EventStreamController : Controller, IAsyncObserver<IGameAreaEvent>
+    public class EventStreamController : Controller, IAsyncObserver<GameAreaEvent>
     {
         private readonly ILogger<EventStreamController> logger;
         private readonly IClusterClient clusterClient;
         private WebSocket webSocket;
-        private IAsyncStream<IGameAreaEvent> stream;
-
+        private IAsyncStream<GameAreaEvent> stream;
 
         public EventStreamController(ILogger<EventStreamController> logger, IClusterClient clusterClient)
         {
@@ -39,7 +38,7 @@ namespace GameService
             webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
             logger.LogInformation("WS connected" + webSocket);
             var stream = clusterClient.GetStreamProvider("SMSProvider")
-                .GetStream<IGameAreaEvent>(Guid.Empty, null);
+                .GetStream<GameAreaEvent>(Guid.Empty, null);
             await stream.SubscribeAsync(this);
 
             await WaitForWebSocketMessages();
@@ -64,16 +63,17 @@ namespace GameService
 
         public Task OnErrorAsync(Exception ex)
         {
+            logger.LogError(ex, "OnErrorAsync");
             return Task.CompletedTask;
         }
 
-        public async Task OnNextAsync(IGameAreaEvent gameEvent, StreamSequenceToken token = null)
+        public async Task OnNextAsync(GameAreaEvent gameEvent, StreamSequenceToken token = null)
         {
             logger.LogInformation("forwarding event " + gameEvent);
             try {
                 await webSocket.SendObject(gameEvent);
             } catch (Exception e) {
-                logger.LogWarning("Error on stream", e);
+                logger.LogWarning(e, "Error on stream");
                 await webSocket.CloseAsync(WebSocketCloseStatus.InternalServerError, "Error occured on send", CancellationToken.None);
             }
         }
