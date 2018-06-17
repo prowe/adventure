@@ -40,5 +40,12 @@ namespace Silo.GameAreas
             logger.LogInformation("Initializing");
             return Task.CompletedTask;
         }
+        public async Task PatchArea(GameAreaPatchRequest patchRequest)
+        {
+            var e = new GameAreaEvent {
+                TimelineMessage = patchRequest.TimelineMessage
+            };
+            await areaEventStream.OnNextAsync(e);
+        }
     }
 }
