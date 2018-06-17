@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Orleans;
 
-namespace GameAreas
+namespace Grains.GameAreas
 {
     public interface IGameAreaGrain : IGrainWithGuidKey
     {

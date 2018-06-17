@@ -2,9 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Grains;
+using Grains.GameAreas;
 using Orleans.Streams;
 
-namespace GameAreas
+namespace Silo.GameAreas
 {
     public class GameAreaGrain : Grain, IGameAreaGrain
     {
@@ -26,7 +28,7 @@ namespace GameAreas
         private async Task TickTock(object arg)
         {
             var e = new GameAreaMessageEvent {
-                Message = $"The clock ticks. The time is now _{DateTime.Now}_"
+                PlayerTimelineMessage = $"The clock ticks. The time is now _{DateTime.Now}_"
             };
             logger.LogInformation("Sending event: {e}", e);
             await areaStreamProvider.OnNextAsync(e);

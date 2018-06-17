@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 using System.Threading;
-using GameAreas;
+using Grains.GameAreas;
 using System.Text;
 using Orleans;
 using Orleans.Configuration;

@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Text;
-using GameAreas;
+using Grains;
+using Grains.GameAreas;
 using Orleans;
 using Orleans.Streams;
 
@@ -47,14 +48,6 @@ namespace GameService
         }
         private async Task TickTock(WebSocket webSocket)
         {
-            // var timer = new Timer(_ => {
-            //     var e = new GameAreaMessageEvent {
-            //         Message = $"The clock ticks. The time is now _{DateTime.Now}_"
-            //     };
-            //     webSocket.SendObject(e);
-            //     logger.LogInformation("Fired from ws controller side: " + e);
-                
-            // }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2));
             var buffer = new byte[1024 * 4];
             WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             while (!result.CloseStatus.HasValue)
@@ -89,7 +82,12 @@ namespace GameService
         public async Task OnNextAsync(GameAreaMessageEvent gameEvent, StreamSequenceToken token = null)
         {
             System.Console.WriteLine("forwarding event " + gameEvent);
-            await webSocket.SendObject(gameEvent);
+            try {
+                await webSocket.SendObject(gameEvent);
+            } catch (Exception e) {
+                System.Console.WriteLine("Error on stream" + e);
+                await webSocket.CloseAsync(WebSocketCloseStatus.InternalServerError, "Error occured on send", CancellationToken.None);
+            }
         }
     }
 }

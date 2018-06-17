@@ -5,8 +5,9 @@ using Microsoft.Extensions.Logging;
 using Orleans.Configuration;
 using System.Threading.Tasks;
 using System.Threading;
-using GameAreas;
+using Silo.GameAreas;
 using Microsoft.Extensions.DependencyInjection;
+using Grains.GameAreas;
 
 namespace Silo
 {

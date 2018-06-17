@@ -1,12 +1,14 @@
-namespace GameAreas
+using Grains;
+
+namespace Grains.GameAreas
 {
-    public class GameAreaMessageEvent
+    public class GameAreaMessageEvent : IGameEvent
     {
-        public string Message {get; set;}
+        public string PlayerTimelineMessage {get; set;}
 
         public override string ToString()
         {
-            return $"GameAreaMessageEvent: {Message}";
+            return $"GameAreaMessageEvent: {PlayerTimelineMessage}";
         }
     }
 }
