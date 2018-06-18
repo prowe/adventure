@@ -10,6 +10,8 @@ using Grains;
 using Grains.GameAreas;
 using Orleans;
 using Orleans.Streams;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace GameService
 {
@@ -40,10 +42,25 @@ namespace GameService
             var stream = clusterClient.GetStreamProvider("SMSProvider")
                 .GetStream<GameAreaEvent>(Guid.Empty, null);
             await stream.SubscribeAsync(this);
-
+            await PublishInitialAreaState();
             await WaitForWebSocketMessages();
             return Ok();
         }
+
+        private async Task PublishInitialAreaState()
+        {
+            IGameAreaGrain area = clusterClient.GetGrain<IGameAreaGrain>(Guid.Empty);
+            var state = await area.GetAreaState();
+            var patchOps = new JsonPatchDocument<GameAreaState>();
+            patchOps.Replace(ex => ex, state);
+            await webSocket.SendObject(new GameAreaEvent
+            {
+                TimelineMessage = @"Welcome! You are now **connected**",
+                AreaPatchOperations = patchOps
+            });
+            logger.LogInformation("published initial state");
+        }
+
         private async Task WaitForWebSocketMessages()
         {
             var buffer = new byte[1024 * 4];

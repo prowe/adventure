@@ -7,6 +7,8 @@ namespace Grains.GameAreas
     {
         Task Initialize();
 
-        Task PatchArea(GameAreaPatchRequest patchRequest);
+        Task<GameAreaState> PatchArea(GameAreaPatchRequest patchRequest);
+
+        Task<GameAreaState> GetAreaState();
     }
 }

@@ -34,6 +34,7 @@ namespace Silo
                     options.FireAndForgetDelivery = true;
                 })
                 .AddMemoryGrainStorage("PubSubStore")
+                .AddMemoryGrainStorageAsDefault()
                 .AddStartupTask(InitStartingRoom);
 
             var host = builder.Build();

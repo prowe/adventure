@@ -16,6 +16,7 @@ using System.Text;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using Orleans.CodeGenerator;
 
 namespace GameService
 {
@@ -33,6 +34,9 @@ namespace GameService
                     options.ServiceId = "MyAwesomeService";
                 })
                 .AddSimpleMessageStreamProvider("SMSProvider")
+                .ConfigureApplicationParts(parts => parts
+                    .AddApplicationPart(typeof(IGameAreaGrain).Assembly)
+                    .WithCodeGeneration())
                 .ConfigureLogging(logging => logging.AddConsole());
             var client = builder.Build();
             client.Connect().GetAwaiter().GetResult();
